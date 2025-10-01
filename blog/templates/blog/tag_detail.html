@@ -1,0 +1,17 @@
+{% extends 'blog/base.html' %}
+{% block title %}Tag: {{ tag.name }} - My Blog{% endblock %}
+{% block content %}
+<h1>Tag: {{ tag.name }}</h1>
+
+{% if posts %}
+    {% for post in posts %}
+        <h2>
+            <a href="{% url 'blog:post_detail' slug=post.slug %}">{{ post.title }}</a>
+        </h2>
+        <p>{{ post.content|truncatewords:30 }}</p>
+        <hr>
+    {% endfor %}
+{% else %}
+    <p>No posts with this tag yet.</p>
+{% endif %}
+{% endblock %}

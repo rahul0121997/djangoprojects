@@ -1,0 +1,64 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ post.title }} - My Blog{% endblock %}
+
+{% block content %}
+<article>
+    <h1>{{ post.title }}</h1>
+    <p style="color: #777; font-size: 14px; margin: 10px 0;">
+        By <strong>{{ post.author.username }}</strong> |
+        Published on {{ post.created_at|date:"F d, Y" }}
+        {% if post.category %}
+            | Category:
+            <a href="{% url 'blog:category_detail' slug=post.category.slug %}" style="color: #3498db;">
+                {{ post.category.name }}
+            </a>
+        {% endif %}
+    </p>
+
+    <div>
+        {{ post.content|linebreaks }}
+    </div>
+
+    {% if post.tags.all %}
+        <p style="margin-top: 20px;">
+            <strong>Tags:</strong>
+            {% for tag in post.tags.all %}
+                <a href="{% url 'blog:tag_detail' slug=tag.slug %}"
+                   style="display:inline-block;background:#ecf0f1;color:#2c3e50;
+                          padding:3px 8px;margin:2px;border-radius:3px;text-decoration:none;">
+                    {{ tag.name }}
+                </a>
+            {% endfor %}
+        </p>
+    {% endif %}
+</article>
+
+<hr>
+
+<section>
+    <h3>Comments</h3>
+    {% if comments %}
+        {% for comment in comments %}
+            <div style="margin-bottom:15px;padding:10px;border:1px solid #ddd;border-radius:4px;">
+                <p><strong>{{ comment.author.username }}</strong> ({{ comment.created_at|date:"F d, Y H:i" }})</p>
+                <p>{{ comment.content }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No comments yet.</p>
+    {% endif %}
+</section>
+
+<hr>
+
+{% if user.is_authenticated %}
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="content" rows="4" style="width:100%;margin-bottom:10px;"></textarea>
+        <button type="submit">Add Comment</button>
+    </form>
+{% else %}
+    <p><a href="/login/">Login</a> to add a comment.</p>
+{% endif %}
+{% endblock %}

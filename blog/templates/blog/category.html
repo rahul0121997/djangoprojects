@@ -1,0 +1,19 @@
+{% extends 'blog/base.html' %}
+{% block title %}Categories - My Blog{% endblock %}
+{% block content %}
+<h1>Categories</h1>
+
+{% if categories %}
+    <ul>
+        {% for category in categories %}
+            <li>
+                <a href="{% url 'blog:category_detail' slug=category.slug %}">
+                    {{ category.name }}
+                </a> - {{ category.description }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No categories available.</p>
+{% endif %}
+{% endblock %}
