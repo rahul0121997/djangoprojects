@@ -82,26 +82,25 @@ from django.views import View
 from django.contrib import messages
 from .models import Category, Tag, Post, Comment
 from django.views.generic import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView
+from django.urls import reverse_lazy
+from django.utils.text import slugify
 
 
-# -----------------------
-# Base Page
-# -----------------------
 class BaseView(View):
     def get(self, request):
         return render(request, 'blog/base.html')
 
 
-# -----------------------
-# Post List
-# -----------------------
+
 class PostListView(View):
     def get(self, request):
         posts = Post.objects.all()
         return render(request, 'blog/post_list.html', {'posts': posts})
 
 
-# -----------------------
+
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
@@ -145,9 +144,6 @@ class CategoryView(View):
         return render(request, 'blog/category.html', {'categories': categories})
 
 
-# -----------------------
-# Category Detail
-# -----------------------
 # class CategoryDetailView(View):
 #     def get(self, request, slug):
 #         category = get_object_or_404(Category, slug=slug)
@@ -160,18 +156,14 @@ class CategoryView(View):
 #         return render(request, 'blog/category_detail.html', context)
 
 
-# -----------------------
-# Tag List
-# -----------------------
+
 class TagListView(View):
     def get(self, request):
         tags = Tag.objects.all()
         return render(request, 'blog/tag_list.html', {'tags': tags})
 
 
-# -----------------------
-# Tag Detail
-# -----------------------
+
 # class TagDetailView(View):
 #     def get(self, request, slug):
 #         tag = get_object_or_404(Tag, slug=slug)
@@ -209,3 +201,16 @@ class TagDetailView(View):
             'posts': posts,
         }
         return render(request, 'blog/tag_detail.html', context)
+    
+
+class PostCreateView(CreateView):
+    model = Post
+    fields = ['title', 'content'] 
+    template_name = 'blog/form.html'  
+    success_url = reverse_lazy('blog:post_list')  
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user  
+        form.instance.slug = slugify(form.instance.title)  
+        return super().form_valid(form)
+

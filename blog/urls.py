@@ -1,8 +1,9 @@
 from . import views
-from django.urls import path
-from .views import BaseView, PostListView, PostDetailView,CategoryDetailView, TagListView, TagDetailView,CategoryView
+from django.urls import path,include
+from .views import BaseView, PostListView, PostDetailView,CategoryDetailView, TagListView, TagDetailView,CategoryView,PostCreateView
+from django.urls import reverse_lazy
 
-app_name = 'blog'  # important for namespacing in templates
+
 
 
 # urlpatterns = [
@@ -16,14 +17,18 @@ app_name = 'blog'  # important for namespacing in templates
 # ]
 
 
+app_name = 'blog'
 
 urlpatterns = [
-    path('', PostListView.as_view(), name='post_list'),  # this is your homepage
+    path('', PostListView.as_view(), name='post_list'), 
     path('post/<slug:slug>/', PostDetailView.as_view(), name='post_detail'),
     path('categories/', CategoryView.as_view(), name='category_list'),
     path('category/<slug:slug>/', CategoryDetailView.as_view(), name='category_detail'),
     path('tags/', TagListView.as_view(), name='tag_list'),
     path('tag/<slug:slug>/', TagDetailView.as_view(), name='tag_detail'),
+    path('create-form/',PostCreateView.as_view(),name='form_create'),
+    
+     path('api/', include('blog.api_urls')),
 ]
 
 
